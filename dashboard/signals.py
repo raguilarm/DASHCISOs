@@ -7,6 +7,8 @@ eliminating duplicated sign/color/meaning literals across the codebase.
 from dataclasses import dataclass
 from enum import Enum
 
+__all__ = ["RiskLevel", "Signal", "SIGNALS"]
+
 
 class RiskLevel(Enum):
     LOW = "Low Risk"
@@ -28,10 +30,16 @@ class Signal:
         return f"{self.icon} [{self.color}] {self.meaning}"
 
 
-# Single source of truth for all siganios — no duplication elsewhere.
+# Each RiskLevel appears exactly once — the dict key is derived from the same
+# tuple, so there is no duplication between the key and Signal.risk_level.
+_SIGNAL_DATA: list[tuple[RiskLevel, str, str, str]] = [
+    (RiskLevel.LOW,    "✅",  "Green",  "Compliant / Low Risk"),
+    (RiskLevel.MEDIUM, "⚠️", "Yellow", "Warning / Medium Risk"),
+    (RiskLevel.HIGH,   "🔴",  "Red",    "Critical / High Risk"),
+    (RiskLevel.INFO,   "ℹ️", "Blue",   "Informational"),
+]
+
 SIGNALS: dict[RiskLevel, Signal] = {
-    RiskLevel.LOW: Signal("✅", "Green", "Compliant / Low Risk", RiskLevel.LOW),
-    RiskLevel.MEDIUM: Signal("⚠️", "Yellow", "Warning / Medium Risk", RiskLevel.MEDIUM),
-    RiskLevel.HIGH: Signal("🔴", "Red", "Critical / High Risk", RiskLevel.HIGH),
-    RiskLevel.INFO: Signal("ℹ️", "Blue", "Informational", RiskLevel.INFO),
+    level: Signal(icon, color, meaning, level)
+    for level, icon, color, meaning in _SIGNAL_DATA
 }

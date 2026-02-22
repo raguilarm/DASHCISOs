@@ -6,6 +6,11 @@ from .signals import SIGNALS, RiskLevel, Signal
 
 __all__ = ["Dashboard", "RiskLevel", "Signal", "SIGNALS"]
 
+# Environment variable names — defined once to avoid scattered magic strings.
+_ENV_ACTIVE = "ACTIVE"
+_ENV_SIGANIOS = "SIGANIOS_ENABLED"
+_ENV_ALERTS = "ALERTS_ENABLED"
+
 
 def _env_flag(name: str) -> bool:
     """Return True when an environment variable is set to 'true' or '1' (case-insensitive)."""
@@ -22,9 +27,9 @@ class Dashboard:
     """
 
     def __init__(self) -> None:
-        self.active = _env_flag("ACTIVE")
-        self.siganios_enabled = _env_flag("SIGANIOS_ENABLED")
-        self.alerts_enabled = _env_flag("ALERTS_ENABLED")
+        self.active = _env_flag(_ENV_ACTIVE)
+        self.siganios_enabled = _env_flag(_ENV_SIGANIOS)
+        self.alerts_enabled = _env_flag(_ENV_ALERTS)
 
     # ------------------------------------------------------------------
     # Signal helpers — delegate to the single source of truth in signals.py
@@ -54,7 +59,7 @@ class Dashboard:
         """
         return [self.render_signal(level) for level in RiskLevel]
 
-    def status(self) -> dict:
+    def status(self) -> dict[str, bool]:
         """Return the current activation status of the dashboard."""
         return {
             "active": self.active,

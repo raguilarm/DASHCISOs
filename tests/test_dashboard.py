@@ -3,7 +3,7 @@
 import pytest
 
 from dashboard import Dashboard
-from dashboard.signals import SIGNALS, RiskLevel
+from dashboard.signals import SIGNALS, RiskLevel, _SIGNAL_DATA
 
 
 # ---------------------------------------------------------------------------
@@ -28,6 +28,14 @@ class TestSignalDefinitions:
     def test_signal_risk_level_matches_key(self):
         for level, signal in SIGNALS.items():
             assert signal.risk_level == level
+
+    def test_signal_data_has_no_duplicate_risk_levels(self):
+        levels = [row[0] for row in _SIGNAL_DATA]
+        assert len(levels) == len(set(levels)), "Duplicate RiskLevel in _SIGNAL_DATA"
+
+    def test_signals_built_from_signal_data(self):
+        """SIGNALS must be derived entirely from _SIGNAL_DATA with no extra entries."""
+        assert set(SIGNALS.keys()) == {row[0] for row in _SIGNAL_DATA}
 
     def test_signal_str_includes_icon_color_meaning(self):
         signal = SIGNALS[RiskLevel.LOW]
