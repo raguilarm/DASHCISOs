@@ -1,10 +1,9 @@
 """Tests for the DASHCISOs dashboard module."""
 
-import os
 import pytest
 
 from dashboard import Dashboard
-from dashboard.signals import SIGNALS, RiskLevel, Signal
+from dashboard.signals import SIGNALS, RiskLevel
 
 
 # ---------------------------------------------------------------------------
@@ -99,3 +98,39 @@ class TestDashboardStatus:
 
         monkeypatch.setenv("ACTIVE", "True")
         assert Dashboard().active is True
+
+    def test_flag_accepts_numeric_one(self, monkeypatch):
+        monkeypatch.setenv("ACTIVE", "1")
+        assert Dashboard().active is True
+
+    def test_flag_rejects_other_values(self, monkeypatch):
+        for val in ("yes", "on", "enabled", ""):
+            monkeypatch.setenv("ACTIVE", val)
+            assert Dashboard().active is False
+
+
+# ---------------------------------------------------------------------------
+# Dashboard — render_all_signals
+# ---------------------------------------------------------------------------
+
+class TestDashboardRenderAllSignals:
+    """render_all_signals must return one entry per RiskLevel — no manual loop needed."""
+
+    def test_returns_all_risk_levels(self, monkeypatch):
+        monkeypatch.setenv("SIGANIOS_ENABLED", "true")
+        dash = Dashboard()
+        results = dash.render_all_signals()
+        assert len(results) == len(RiskLevel)
+
+    def test_order_matches_risk_level_enum(self, monkeypatch):
+        monkeypatch.setenv("SIGANIOS_ENABLED", "true")
+        dash = Dashboard()
+        results = dash.render_all_signals()
+        for rendered, level in zip(results, RiskLevel):
+            assert SIGNALS[level].icon in rendered
+
+    def test_consistent_with_individual_render(self, monkeypatch):
+        monkeypatch.setenv("SIGANIOS_ENABLED", "true")
+        dash = Dashboard()
+        for rendered, level in zip(dash.render_all_signals(), RiskLevel):
+            assert rendered == dash.render_signal(level)

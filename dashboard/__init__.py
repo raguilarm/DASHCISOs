@@ -4,10 +4,12 @@ import os
 
 from .signals import SIGNALS, RiskLevel, Signal
 
+__all__ = ["Dashboard", "RiskLevel", "Signal", "SIGNALS"]
+
 
 def _env_flag(name: str) -> bool:
-    """Return True when an environment variable is set to 'true' (case-insensitive)."""
-    return os.getenv(name, "false").lower() == "true"
+    """Return True when an environment variable is set to 'true' or '1' (case-insensitive)."""
+    return os.getenv(name, "false").lower() in ("true", "1")
 
 
 class Dashboard:
@@ -43,6 +45,14 @@ class Dashboard:
         if not self.siganios_enabled:
             return f"[{signal.meaning}]"
         return str(signal)
+
+    def render_all_signals(self) -> list[str]:
+        """Render every known signal in order of severity.
+
+        Centralises iteration over RiskLevel so callers never need to
+        duplicate the loop themselves.
+        """
+        return [self.render_signal(level) for level in RiskLevel]
 
     def status(self) -> dict:
         """Return the current activation status of the dashboard."""
