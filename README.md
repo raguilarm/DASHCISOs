@@ -42,3 +42,14 @@ Clone the repository and follow the setup instructions for your environment.
 ```bash
 git clone https://github.com/raguilarm/DASHCISOs.git
 ```
+
+## Development
+
+Requires Python 3.9+.
+
+Install test dependencies and run the test suite:
+
+```bash
+pip install -r requirements-dev.txt
+pytest tests/ -v
+```
