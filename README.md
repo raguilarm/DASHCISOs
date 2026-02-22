@@ -19,6 +19,22 @@ The dashboard uses a set of improved visual signs to communicate security status
 | 🔴 | Red | Critical / High Risk |
 | ℹ️ | Blue | Informational |
 
+## Activar (Activate)
+
+Before using the dashboard, you must activate it by configuring the required settings:
+
+1. **Activate the dashboard**: Set the `ACTIVE` environment variable to `true`.
+2. **Activate siganios**: Enable the improved signs/icons by setting `SIGANIOS_ENABLED=true`.
+3. **Activate alerts**: Turn on real-time security alerts with `ALERTS_ENABLED=true`.
+
+Example activation configuration:
+
+```bash
+ACTIVE=true
+SIGANIOS_ENABLED=true
+ALERTS_ENABLED=true
+```
+
 ## Getting Started
 
 Clone the repository and follow the setup instructions for your environment.
